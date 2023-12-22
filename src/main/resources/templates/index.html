@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MYSQL</title>
+    <link rel="stylesheet" href="../static/css/el.css">
+    <link rel="icon" href="../static/images/icons/logo.jpeg" type ="image/x-icon">
+</head>
+<body>
+    <div id="app">
+        <el-container>
+            <el-header>
+                <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
+                    <el-menu-item index="1">处理中心</el-menu-item>
+                    <el-submenu index="2">
+                        <template slot="title">我的工作台</template>
+                        <el-menu-item index="2-1">选项1</el-menu-item>
+                        <el-menu-item index="2-2">选项2</el-menu-item>
+                        <el-menu-item index="2-3">选项3</el-menu-item>
+                        <el-submenu index="2-4">
+                            <template slot="title">选项4</template>
+                            <el-menu-item index="2-4-1">选项1</el-menu-item>
+                            <el-menu-item index="2-4-2">选项2</el-menu-item>
+                            <el-menu-item index="2-4-3">选项3</el-menu-item>
+                        </el-submenu>
+                    </el-submenu>
+                    <el-menu-item index="3" disabled>消息中心</el-menu-item>
+                    <el-menu-item index="4"><a href="https://www.ele.me" target="_blank">订单管理</a></el-menu-item>
+                </el-menu>
+            </el-header>
+
+            <el-aside></el-aside>
+
+            <el-main>
+                <div>
+                    <el-row>
+                        <el-col :span="4" :offset="1">
+                            <el-input v-model="search.name" placeholder="请输入姓名"></el-input>
+                        </el-col>
+                        <el-col :span="4" :offset="2">
+                            <el-button type="primary" @click="searchStu">查询学生</el-button>
+                        </el-col>
+                        <el-col :span="4" :offset="2">
+                            <el-button type="primary" @click="statistics">成绩统计</el-button>
+                        </el-col>
+                    </el-row>
+                </div>
+                <el-divider></el-divider>
+                <div>
+                    <el-row>
+                        <el-col :span="4" :offset="1">
+                            <el-input v-model="stu.name" placeholder="请输入姓名"></el-input>
+                        </el-col>
+                        <el-col :span="4" :offset="1">
+                            <el-input-number v-model="stu.age" :min="1" :max="100" label="选择年龄"></el-input-number>
+                        </el-col>
+                        <el-col :span="4" :offset="1">
+                            <div style="border: solid 1px;padding-left: 20px;padding-top: 5px;border-radius: 5px;height: 30px">
+                                <el-radio v-model="stu.sex" label="男">男</el-radio>
+                                <el-radio v-model="stu.sex" label="女">女</el-radio>
+                            </div>
+                        </el-col>
+                        <el-col :span="4" :offset="2">
+                            <el-button type="primary" @click="addStu">添加学生</el-button>
+                        </el-col>
+                    </el-row>
+                </div>
+                <el-divider></el-divider>
+                <el-table
+                        :data="students"
+                        border
+                        style="width: 100%">
+                    <el-table-column
+                            prop="sid"
+                            label="序号"
+                            width="180">
+                    </el-table-column>
+                    <el-table-column
+                            prop="name"
+                            label="姓名"
+                            width="180">
+                    </el-table-column>
+                    <el-table-column
+                            prop="age"
+                            label="年龄">
+                    </el-table-column>
+                    <el-table-column
+                            prop="sex"
+                            label="性别">
+                        <template slot-scope="scope">
+                            {{ scope.row.sex }}
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                            prop="score"
+                            label="JAVA成绩">
+                        <template slot-scope="scope">
+                            <div style="color: red">
+                                {{ scope.row.score }}
+                            </div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                            prop="sid"
+                            label="编辑">
+                        <template slot-scope="scope">
+                            <el-button type="info" @click="updateStuPre(scope.row)">编辑</el-button>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                            prop="sid"
+                            label="删除">
+                        <template slot-scope="scope">
+                            <div>
+                                <el-popconfirm
+                                        title="这是一段内容确定删除吗？"
+                                        @confirm="delStu(scope.row.sid)"
+                                >
+                                    <el-button type="danger" slot="reference">删除</el-button>
+                                </el-popconfirm>
+                            </div>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <el-divider>成绩统计</el-divider>
+<!--                成绩统计-->
+                <div>
+                    <el-row>
+                        <el-col :span="3">
+                            <el-statistic title="平均分">
+                                <template slot="formatter">
+                                    {{ score.avg }}
+                                </template>
+                            </el-statistic>
+                        </el-col>
+                        <el-col :span="3">
+                            <el-statistic title="最高分">
+                                <template slot="formatter">
+                                    {{ score.max }}
+                                </template>
+                            </el-statistic>
+                        </el-col>
+                        <el-col :span="3">
+                            <el-statistic title="最低分">
+                                <template slot="formatter">
+                                    {{ score.min }}
+                                </template>
+                            </el-statistic>
+                        </el-col>
+                        <el-col :span="3">
+                            <el-statistic title="不及格">
+                                <template slot="formatter">
+                                    {{ score.fail }} 个
+                                </template>
+                            </el-statistic>
+                        </el-col>
+                    </el-row>
+                </div>
+
+<!--                修改信息对话框-->
+                <el-dialog
+                        title="修改信息"
+                        :visible.sync="flags.add"
+                        width="80%"
+                        >
+                    <div>
+                        <el-row>
+                            <el-col :span="4" :offset="1">
+                                <p>姓名</p>
+                            </el-col>
+                            <el-col :span="4" :offset="1">
+                                <p>年龄</p>
+                            </el-col>
+                            <el-col :span="4" :offset="1">
+                                <p>性别</p>
+                            </el-col>
+                            <el-col :span="4" :offset="1">
+                                <p>JAVA成绩</p>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="4" :offset="1">
+                                <el-input v-model="update.name" placeholder="请输入姓名"></el-input>
+                            </el-col>
+                            <el-col :span="4" :offset="1">
+                                <el-input-number v-model="update.age" :min="1" :max="100" label="选择年龄"></el-input-number>
+                            </el-col>
+                            <el-col :span="4" :offset="1">
+                                <div style="border: solid 1px;padding-left: 20px;padding-top: 5px;border-radius: 5px;height: 30px">
+                                    <el-radio v-model="update.sex" label="男">男</el-radio>
+                                    <el-radio v-model="update.sex" label="女">女</el-radio>
+                                </div>
+                            </el-col>
+                            <el-col :span="4" :offset="1">
+                                <el-input v-model="update.score" placeholder="请输入JAVA成绩"></el-input>
+                            </el-col>
+                        </el-row>
+                    </div>
+                    <span slot="footer" class="dialog-footer">
+                    <el-button @click="flags.add = false">取 消</el-button>
+                    <el-button type="primary" @click="updateStu">确 定</el-button>
+                  </span>
+                </el-dialog>
+            </el-main>
+        </el-container>
+    </div>
+</body>
+</html>
+<script src="../static/js/vue.js"></script>
+<script src="../static/js/el.js"></script>
+<script src="../static/js/axios-0.18.0.js"></script>
+<script>
+    var _axios = axios.create({
+        // baseUrl:"http://localhost:8080/"
+    });
+    axios = _axios;
+
+    const vue = new Vue({
+        el:"#app",
+        data(){
+            return {
+                title:"hello spring!",
+                flags:{
+                    add:false,
+                },
+                score:{
+                    avg:0,
+                    max:0,
+                    min:0,
+                    fail:0,
+                },
+                update:{
+                    sid:"",
+                    name:"",
+                    sex:"",
+                    age:"",
+                    score:0,
+                },
+                search:{
+                    name:"",
+                    sex:"",
+                    age:""
+                },
+                stu:{
+                    name:"",
+                    sex:"",
+                    age:"",
+                },
+                students:[],
+            }
+        },
+        methods:{
+            sendMsg(msg,type){
+                this.$message({
+                    message: msg,
+                    type: type
+                });
+            },
+            updateStuPre(stu){
+                this.update.sid = stu.sid;
+                this.update.name = stu.name;
+                this.update.sex = stu.sex;
+                this.update.age = stu.age;
+                this.update.score = stu.score;
+
+                this.flags.add = true;
+            },
+            statistics(){
+                let min = 100,max = 0, avg = 0, fail = 0;
+                for (let i = 0; i < this.students.length; i++) {
+                    const score = this.students[i].score;
+                    if (score < 60){
+                        fail++;
+                    }
+                    if (score < min){
+                        min = score
+                    }
+                    if (score > max){
+                        max = score
+                    }
+                    avg += score;
+                }
+                this.score.min = min;
+                this.score.max = max;
+                this.score.avg = String(avg / this.students.length).substring(0,5);
+                this.score.fail = fail;
+            },
+            async updateStu(){
+                const student = {
+                    sid: this.update.sid,
+                    name: this.update.name,
+                    sex: this.update.sex,
+                    age: this.update.age,
+                    score: this.update.score
+                };
+                const resp = axios.post("/students/u",student);
+                this.flags.add = false;
+                console.log("update:" + resp.data);
+                this.update = {};
+                await this.getAllStudents();
+                await this.getAllStudents();
+                await this.getAllStudents();
+                await this.getAllStudents();
+            },
+            async searchStu(){
+                const student = {
+                    name: this.search.name,
+                    sex: this.search.sex,
+                    age: this.search.age
+                };
+                const resp = await axios.post("/students/q",student);
+                this.students = resp.data.data;
+            },
+            async addStu(){
+                const student = {
+                    name: this.stu.name,
+                    sex: this.stu.sex,
+                    age: this.stu.age
+                };
+                const resp = await axios.post("/students",student);
+                this.sendMsg("添加成功!","success");
+                console.log(resp.data);
+                await this.getAllStudents();
+            },
+            async getAllStudents(){
+                const resp = await axios.get("/students");
+                this.students = resp.data.data;
+            },
+            async delStu(sid){
+                const resp = await axios.delete(`/students/${sid}`);
+                this.sendMsg("删除成功!","success");
+                console.log(resp.data);
+                await this.getAllStudents();
+            },
+        },
+        mounted(){
+            this.getAllStudents();
+            this.statistics();
+            console.log("页面加载完毕");
+        },
+    })
+</script>

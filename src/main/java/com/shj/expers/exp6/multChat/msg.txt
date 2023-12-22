@@ -1,0 +1,6 @@
+server:这是一个聊天服务器
+server:你们可以随便和其他人聊天
+zhangsan: 我是申洪建，很高兴见到大家
+zhangsan: 还有人在吗
+lisi: HELLO 我是李四，申洪建的朋友
+lisi: 大家好

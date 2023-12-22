@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>player</title>
+  <link rel="stylesheet" href="../static/css/el.css">
+</head>
+<body>
+  <div id="app">
+    <el-container>
+      <el-header>
+        <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
+          <el-menu-item index="1">处理中心</el-menu-item>
+          <el-submenu index="2">
+            <template slot="title">我的工作台</template>
+            <el-menu-item index="2-1">选项1</el-menu-item>
+            <el-menu-item index="2-2">选项2</el-menu-item>
+            <el-menu-item index="2-3">选项3</el-menu-item>
+            <el-submenu index="2-4">
+              <template slot="title">选项4</template>
+              <el-menu-item index="2-4-1">选项1</el-menu-item>
+              <el-menu-item index="2-4-2">选项2</el-menu-item>
+              <el-menu-item index="2-4-3">选项3</el-menu-item>
+            </el-submenu>
+          </el-submenu>
+          <el-menu-item index="3" disabled>消息中心</el-menu-item>
+          <el-menu-item index="4"><a href="https://www.ele.me" target="_blank">订单管理</a></el-menu-item>
+        </el-menu>
+      </el-header>
+      <br>
+      <el-container>
+        <el-main>
+          <div class="center-video video-container">
+            <video width="800" height="450" controls>
+              <source src="http://localhost:8080/video/play?vname=test" type="video/mp4">
+            </video>
+          </div>
+        </el-main>
+      </el-container>
+      <el-divider>评论区</el-divider>
+    </el-container>
+
+  </div>
+</body>
+</html>
+<style>
+  .el-aside{
+
+  }
+  .center-video {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /*height: 100vh; !* 设置高度为视口高度，使视频铺满整个屏幕 *!*/
+  }
+
+  /* 自定义视频容器样式 */
+  .video-container {
+    width: 800px; /* 设置容器宽度 */
+    margin: 0 auto; /* 居中容器 */
+    border: 1px solid #ccc; /* 添加边框 */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* 添加阴影效果 */
+    background-color: #f9f9f9; /* 设置背景颜色 */
+  }
+
+  /* 自定义视频样式 */
+  .video-container video {
+    width: 100%; /* 视频宽度为容器宽度 */
+    height: auto; /* 自动调整高度，保持原始宽高比 */
+    display: block; /* 让视频成为块级元素 */
+    border-radius: 10px; /* 添加圆角 */
+  }
+
+
+</style>
+<script src="../static/js/vue.js"></script>
+<script src="../static/js/el.js"></script>
+<script src="../static/js/axios-0.18.0.js"></script>
+<script>
+  const vue = new Vue({
+    el:"#app",
+    data(){
+      return {
+
+      }
+    },
+    methods:{
+
+    },
+    mounted(){
+
+    }
+  })
+</script>

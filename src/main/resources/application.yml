@@ -1,0 +1,21 @@
+server:
+  port: 7070
+  error:
+    path: /error
+
+spring:
+  application:
+    name: javaexp
+
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/studentinfo?useSSL=false
+    username: root
+    password: 12345678
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  mail:
+    host: smtp.qq.com
+    username: 1327325289
+    password: ktpfhaqbaubdhjgh # 授权码
+

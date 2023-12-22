@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>验证码案例</title>
+    <link rel="stylesheet" href="../static/css/el.css">
+    <link rel="icon" href="../static/images/icons/logo.jpeg" type ="image/x-icon">
+</head>
+<body>
+<div id="app">
+    <img id="img1" :src="src1" alt="" @click="reflush1">
+    <div style="display: inline-block;width: 500px">
+        <el-input v-model="code1"></el-input>
+    </div>
+    <el-button type="primary" @click="submit1">提交1</el-button>
+
+    <el-divider>分割线</el-divider>
+<!--    <div id="par">-->
+<!--        <div id="draggableElement" class="draggable dec">-->
+<!--            拖我-->
+<!--        </div>-->
+<!--    </div>-->
+    <el-divider></el-divider>
+    <div id="con-slider" class="captcha-container">
+        <div class="slider" id="slider">滑动</div>
+    </div>
+</div>
+</body>
+</html>
+<style>
+    /* 验证码容器样式 */
+    .captcha-container {
+        border: 1px solid;
+        border-radius: 3px;
+
+        margin-left: 100px;
+        position: relative;
+        width: 300px;
+        height: 150px;
+        background-image: url('http://localhost:8080/slider/bg');
+        background-size: cover;
+        overflow: hidden;
+    }
+
+    /* 滑块样式 */
+    .slider {
+        position: absolute;
+        width: 50px;
+        height: 50px;
+        background-color: #337ab7;
+        color: #fff;
+        text-align: center;
+        line-height: 50px;
+        cursor: pointer;
+    }
+    #par{
+        border-top: 1px solid;
+        background-color: #00ffff;
+        border-bottom: 1px solid;
+    }
+    .draggable {
+        width: 100px;
+        height: 60px;
+        background-color: #3498db;
+        color: #fff;
+        text-align: center;
+        line-height: 60px;
+        position: absolute;
+        cursor: grab; /* 设置鼠标样式为抓取 */
+        display: inline-block;
+    }
+    .dec{
+        top: 120px;
+        margin-top: 5px;
+        border-radius: 5px;
+        margin-bottom: 5px;
+    }
+
+</style>
+<script src="../static/js/vue.js"></script>
+<script src="../static/js/el.js"></script>
+<script src="../static/js/axios-0.18.0.js"></script>
+<script>
+    const vue = new Vue({
+        el:"#app",
+        data(){
+            return {
+                src1:"http://localhost:8080/code/get",
+                code1:"",
+            }
+        },
+        methods:{
+            reflush1(){
+                console.log("img1 reflush...")
+                this.src1 = "http://localhost:8080/code/get?time=" + new Date().getTime();
+            },
+            submit1(){
+                axios.get("http://localhost:8080/code/check?code=" + this.code1).then((resp)=>{
+                    console.log(resp.data);
+                });
+                this.reflush1();
+            },
+            f1(){
+                const draggableElement = document.getElementById('draggableElement');
+                let initX = draggableElement.style.left, initY = draggableElement.style.top;
+
+                let offsetX, offsetY, isDragging = false;
+
+                draggableElement.addEventListener('mousedown', (e) => {
+                    isDragging = true;
+                    offsetX = e.clientX - draggableElement.getBoundingClientRect().left;
+                    offsetY = e.clientY - draggableElement.getBoundingClientRect().top;
+
+                    draggableElement.style.cursor = 'grabbing'; // 设置鼠标样式为正在拖动
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+
+                    const x = e.clientX - offsetX;
+                    const y = e.clientY - offsetY;
+
+                    draggableElement.style.left = x + 'px';
+                    draggableElement.style.top = y >= 200 ? '200px' : y <= 120 ? '120px' : y + 'px';
+                });
+
+                document.addEventListener('mouseup', () => {
+                    isDragging = false;
+                    draggableElement.style.cursor = 'grab';
+                    if (true){
+                        draggableElement.style.left = initX;
+                        draggableElement.style.top = initY;
+                    }
+                });
+            }
+        },
+        mounted(){
+            const slider = document.getElementById('slider');
+            let isDragging = false;
+
+            slider.addEventListener('mousedown', (event) => {
+                isDragging = true;
+            });
+
+            document.addEventListener('mousemove', (event) => {
+                if (isDragging) {
+                    const container = document.querySelector('.captcha-container');
+                    const containerRect = container.getBoundingClientRect();
+                    const sliderRect = slider.getBoundingClientRect();
+
+                    const offsetX = event.clientX - containerRect.left - sliderRect.width / 2;
+                    const maxX = containerRect.width - sliderRect.width;
+
+                    slider.style.left = `${Math.max(0, Math.min(offsetX, maxX))}px`;
+                }
+            });
+
+            document.addEventListener('mouseup', async (event) => {
+                if (isDragging) {
+                    isDragging = false;
+                    const sliderPosition = parseInt(slider.style.left, 10);
+                    console.log(sliderPosition);
+                    // 获取style
+                    let container = document.querySelector('.captcha-container');
+
+                    // 向后端发送验证请求
+                    try {
+                        const resp = await axios.get(`/slider/${sliderPosition}`);
+                        // console.log(resp.data);
+                        if (resp.data){
+                            container.style.backgroundImage = 'url("http://localhost:8080/slider/bg?time = ' + new Date().getTime() + '")';
+                        }
+                    }catch (e) {
+                        slider.style.left = '0';
+                    }
+
+                    slider.style.left = '0';
+                }
+            });
+
+        }
+    })
+</script>
